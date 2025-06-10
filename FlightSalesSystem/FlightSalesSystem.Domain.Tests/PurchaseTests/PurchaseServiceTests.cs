@@ -33,7 +33,7 @@ public class PurchaseServiceTests
         {
             Flight = flight,
             Tenant = Tenant.Create("Test", TenantGroup.A),
-            CustomerData = new CustomerData(),
+            CustomerData = CustomerData.Create("Test", "User", new DateOnly(1990, 1, 1)),
             FlightDate = flightDate
         };
 
