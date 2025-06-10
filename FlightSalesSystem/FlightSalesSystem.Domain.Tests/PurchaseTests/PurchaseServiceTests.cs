@@ -51,7 +51,8 @@ public class PurchaseServiceTests
         var price = 100;
 
         var flight = FlightTestFactory.CreateFlight(
-            priceFrom: flightDate, priceTo: flightDate, priceAmount: price);
+            priceFrom: flightDate, priceTo: flightDate, priceAmount: price,
+            departureTime: flightDate.TimeOfDay, daysOfWeek: [flightDate.DayOfWeek]);
         var tenant = Tenant.Create("TestTenant", TenantGroup.A);
         var customer = CustomerData.Create("John", "Doe", new DateOnly(1990, 1, 1));
 

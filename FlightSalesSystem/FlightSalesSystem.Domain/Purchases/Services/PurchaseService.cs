@@ -22,6 +22,9 @@ public class PurchaseService : IPurchaseService
         if (context.FlightDate < _clock.UtcNow)
             throw new FlightDateInPastException();
 
+        if (!context.Flight.HasFlightOnDate(context.FlightDate))
+            throw new FlightNotAvailableException();
+
         var price = context.Flight.GetPrice(context.FlightDate);
         var (finalPrice, appliedDiscounts) = _discountsApplier.ApplyDiscounts(
             MapToDiscountsApplyingContext(context, price)

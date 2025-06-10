@@ -13,13 +13,15 @@ public static class FlightTestFactory
        DateTime? priceFrom = null,
        DateTime? priceTo = null,
        decimal priceAmount = 1,
+       TimeSpan? departureTime = null,
+       IEnumerable<DayOfWeek> daysOfWeek = null,
        string flightCode = "KLM 12345 BCA")
     {
         var flightId = FlightId.Create(flightCode);
         from = from ?? Airport.Create("Chopin", "Warsaw", "Poland", Continent.Europe);
         to = to ?? Airport.Create("Heathrow", "London", "United Kingdom", Continent.Europe);
-        var departureTime = new TimeSpan(10, 30, 0);
-        var daysOfWeek = new List<DayOfWeek> { DayOfWeek.Monday };
+        departureTime = departureTime ?? new TimeSpan(10, 30, 0);
+        daysOfWeek = daysOfWeek ?? new List<DayOfWeek> { DayOfWeek.Monday };
         var daysOfWeekReadOnly = new ReadOnlyCollection<DayOfWeek>(daysOfWeek.ToList());
         var tenantId = Guid.NewGuid();
 
@@ -31,7 +33,7 @@ public static class FlightTestFactory
             prices.Add(FlightPrice.Create(Money.CreateEUR(priceAmount), dateRange));
         }
 
-        return Flight.Create(flightId, from, to, departureTime, daysOfWeekReadOnly, tenantId, prices);
+        return Flight.Create(flightId, from, to, departureTime.Value, daysOfWeekReadOnly, tenantId, prices);
     }
 }
 

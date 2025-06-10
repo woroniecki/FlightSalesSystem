@@ -59,6 +59,13 @@ public class Flight : AggregateRoot
         return price.Price;
     }
 
+    public bool HasFlightOnDate(DateTime date)
+    {
+        return DaysOfWeek.Contains(date.DayOfWeek) &&
+            DepartureTime.Hours == date.Hour &&
+            DepartureTime.Minutes == date.Minute;
+    }
+
     public static Flight Create(
        FlightId flightId,
        Airport from,
