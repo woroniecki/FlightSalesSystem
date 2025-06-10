@@ -7,4 +7,6 @@ public sealed class TenantGroup : Enumeration<TenantGroup>
 
     public static readonly TenantGroup A = new(0, nameof(A));
     public static readonly TenantGroup B = new(1, nameof(B));
+
+    public bool ShouldSaveDiscounts => this == A;
 }

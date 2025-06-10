@@ -9,11 +9,16 @@ namespace FlightSalesSystem.Domain.Purchases.Services;
 public class PurchaseService : IPurchaseService
 {
     private readonly IDiscountsApplier _discountsApplier;
+    private readonly IDiscountSavingPolicy _discountsSavingPolicy;
     private readonly IClock _clock;
 
-    public PurchaseService(IDiscountsApplier discountsApplier, IClock clock)
+    public PurchaseService(
+        IDiscountsApplier discountsApplier,
+        IDiscountSavingPolicy discountsSavingPolicy,
+        IClock clock)
     {
         _discountsApplier = discountsApplier;
+        _discountsSavingPolicy = discountsSavingPolicy;
         _clock = clock;
     }
 
@@ -35,8 +40,8 @@ public class PurchaseService : IPurchaseService
             tenantId: context.Tenant.Id,
             absolutePrice: price,
             finalPrice: finalPrice,
-        customerData: context.CustomerData,
-            appliedDiscounts: appliedDiscounts.Select(d => d.Type).ToList()
+            customerData: context.CustomerData,
+            appliedDiscounts: _discountsSavingPolicy.GetDiscountsToSave(context.Tenant, appliedDiscounts)
         );
     }
 

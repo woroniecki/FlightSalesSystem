@@ -1,7 +1,10 @@
 ﻿using FlightSalesSystem.Domain.Common.Services;
 using FlightSalesSystem.Domain.Discounts.Criteria;
+using FlightSalesSystem.Domain.Discounts.Enums;
 using FlightSalesSystem.Domain.Discounts.Services;
 using FlightSalesSystem.Domain.Flights;
+using FlightSalesSystem.Domain.Flights.Enums;
+using FlightSalesSystem.Domain.Flights.ValueObjects;
 using FlightSalesSystem.Domain.Purchases.Contexts;
 using FlightSalesSystem.Domain.Purchases.Exceptions;
 using FlightSalesSystem.Domain.Purchases.Services;
@@ -22,6 +25,7 @@ public class PurchaseServiceTests
         _clockMock.Setup(c => c.UtcNow).Returns(clockNow);
         return new PurchaseService(
             new DiscountsApplier(),
+            new DiscountSavingPolicy(),
             _clockMock.Object);
     }
 
@@ -73,6 +77,89 @@ public class PurchaseServiceTests
     }
 
     [Fact]
+    public void PurchaseFlight_WithEligibleDiscountsForTenantA_ReturnsDiscountedPurchaseWithSavedDiscounts()
+    {
+        //Arrange
+        var now = new DateTime(2025, 6, 18);
+        var flightDate = now.AddDays(1);
+        var price = 100;
+
+        var flight = FlightTestFactory.CreateFlight(
+            to: Airport.Create("OR Tambo", "Johannesburg", "South Africa", Continent.Africa),
+            priceFrom: flightDate, priceTo: flightDate, priceAmount: price,
+            departureTime: flightDate.TimeOfDay, daysOfWeek: [flightDate.DayOfWeek]);
+        var tenant = Tenant.Create("TestTenant", TenantGroup.A);
+        var customer = CustomerData.Create("John", "Doe", new DateOnly(1990, 6, 19));
+
+        var service = CreateService(now);
+        var discounts = new IDiscountCriteria[] { new BirthdayDiscount(), new ThursdayAfricaDiscount() };
+        var ctx = CreateContext(flight, tenant, customer, flightDate, discounts);
+
+        //Act
+        var purchase = service.PurchaseFlight(ctx);
+
+        //Assert
+        purchase.FinalPrice.Amount.Should().Be(price - 10);
+        purchase.AppliedDiscounts.Should().HaveCount(2);
+        purchase.AppliedDiscounts.Should().Contain(d => d == Discount.Birthday);
+        purchase.AppliedDiscounts.Should().Contain(d => d == Discount.ThursdayAfrica);
+    }
+
+    [Fact]
+    public void PurchaseFlight_WithEligibleDiscountsForTenantB_ReturnsDiscountedPurchaseWithNoSavedDiscounts()
+    {
+        //Arrange
+        var now = new DateTime(2025, 6, 18);
+        var flightDate = now.AddDays(1);
+        var price = 100;
+
+        var flight = FlightTestFactory.CreateFlight(
+            to: Airport.Create("OR Tambo", "Johannesburg", "South Africa", Continent.Africa),
+            priceFrom: flightDate, priceTo: flightDate, priceAmount: price,
+            departureTime: flightDate.TimeOfDay, daysOfWeek: [flightDate.DayOfWeek]);
+        var tenant = Tenant.Create("TestTenant", TenantGroup.B);
+        var customer = CustomerData.Create("John", "Doe", new DateOnly(1990, 6, 19));
+
+        var service = CreateService(now);
+        var discounts = new IDiscountCriteria[] { new BirthdayDiscount(), new ThursdayAfricaDiscount() };
+        var ctx = CreateContext(flight, tenant, customer, flightDate, discounts);
+
+        //Act
+        var purchase = service.PurchaseFlight(ctx);
+
+        //Assert
+        purchase.FinalPrice.Amount.Should().Be(price - 10);
+        purchase.AppliedDiscounts.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void PurchaseFlight_WithUnmetDiscountCriteria_ReturnsPurchaseWithoutDiscounts()
+    {
+        //Arrange
+        var now = new DateTime(2025, 6, 16);
+        var flightDate = now.AddDays(1);
+        var price = 100;
+
+        var flight = FlightTestFactory.CreateFlight(
+            to: Airport.Create("OR Tambo", "Johannesburg", "South Africa", Continent.Africa),
+            priceFrom: flightDate, priceTo: flightDate, priceAmount: price,
+            departureTime: flightDate.TimeOfDay, daysOfWeek: [flightDate.DayOfWeek]);
+        var tenant = Tenant.Create("TestTenant", TenantGroup.A);
+        var customer = CustomerData.Create("John", "Doe", new DateOnly(1990, 6, 18));
+
+        var service = CreateService(now);
+        var discounts = new IDiscountCriteria[] { new BirthdayDiscount(), new ThursdayAfricaDiscount() };
+        var ctx = CreateContext(flight, tenant, customer, flightDate, discounts);
+
+        //Act
+        var purchase = service.PurchaseFlight(ctx);
+
+        //Assert
+        purchase.FinalPrice.Amount.Should().Be(price);
+        purchase.AppliedDiscounts.Should().BeEmpty();
+    }
+
+    [Fact]
     public void PurchaseFlight_WithPastFlightDate_ThrowsFlightDateInPastException()
     {
         //Arrange
@@ -95,5 +182,33 @@ public class PurchaseServiceTests
 
         //Assert
         act.Should().Throw<FlightDateInPastException>();
+    }
+
+    [Fact]
+    public void PurchaseFlight_WhenFlightNotAvailableOnGivenDate_ThrowsFlightNotAvailableException()
+    {
+        //Arrange
+        var now = new DateTime(2025, 6, 20);
+        var flightDate = now.AddDays(1);
+        var price = 100;
+
+        var flight = FlightTestFactory.CreateFlight(
+            priceFrom: flightDate,
+            priceTo: flightDate,
+            priceAmount: price,
+            departureTime: flightDate.TimeOfDay,
+            daysOfWeek: [DayOfWeek.Monday]);
+
+        var tenant = Tenant.Create("TestTenant", TenantGroup.A);
+        var customer = CustomerData.Create("John", "Doe", new DateOnly(1990, 1, 1));
+
+        var service = CreateService(now);
+        var ctx = CreateContext(flight, tenant, customer, flightDate);
+
+        //Act
+        Action act = () => service.PurchaseFlight(ctx);
+
+        //Assert
+        act.Should().Throw<FlightNotAvailableException>();
     }
 }
