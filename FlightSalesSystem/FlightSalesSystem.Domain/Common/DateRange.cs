@@ -25,4 +25,6 @@ public class DateRange : ValueObject
         yield return From;
         yield return To;
     }
+
+    public bool IsApplicableOn(DateTime date) => date >= From && date <= To;
 }

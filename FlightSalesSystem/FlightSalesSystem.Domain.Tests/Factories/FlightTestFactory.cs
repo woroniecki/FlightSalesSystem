@@ -12,6 +12,7 @@ public static class FlightTestFactory
        Airport? to = null,
        DateTime? priceFrom = null,
        DateTime? priceTo = null,
+       decimal priceAmount = 1,
        string flightCode = "KLM 12345 BCA")
     {
         var flightId = FlightId.Create(flightCode);
@@ -27,7 +28,7 @@ public static class FlightTestFactory
         if (priceFrom.HasValue && priceTo.HasValue)
         {
             var dateRange = DateRange.Create(priceFrom.Value, priceTo.Value);
-            prices.Add(FlightPrice.Create(Money.CreateEUR(10), dateRange));
+            prices.Add(FlightPrice.Create(Money.CreateEUR(priceAmount), dateRange));
         }
 
         return Flight.Create(flightId, from, to, departureTime, daysOfWeekReadOnly, tenantId, prices);

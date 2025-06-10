@@ -41,4 +41,43 @@ public class FlightTests
         // Assert
         act.Should().Throw<FlightPricePeriodOverlapException>();
     }
+
+    [Fact]
+    public void GetPrice_WithValidDate_ShouldReturnCorrectPrice()
+    {
+        // Arrange
+        var priceFrom = new DateTime(2025, 01, 01);
+        var priceTo = priceFrom.AddDays(5);
+        var targetDate = priceFrom.AddDays(2);
+        var expectedPrice = 1m;
+
+        var flight = FlightTestFactory.CreateFlight(
+            priceFrom: priceFrom,
+            priceTo: priceTo,
+            priceAmount: expectedPrice);
+
+        // Act
+        var result = flight.GetPrice(targetDate);
+
+        // Assert
+        result.Amount.Should().Be(expectedPrice);
+    }
+
+    [Fact]
+    public void GetPrice_WhenNoPriceDefinedForDate_ShouldThrowFlightPriceNotDefinedException()
+    {
+        // Arrange
+        var priceFrom = new DateTime(2025, 01, 01);
+        var flight = FlightTestFactory.CreateFlight(
+            priceFrom: priceFrom,
+            priceTo: priceFrom.AddDays(1));
+
+        var outOfRangeDate = priceFrom.AddDays(10);
+
+        // Act
+        Action act = () => flight.GetPrice(outOfRangeDate);
+
+        // Assert
+        act.Should().Throw<FlightPriceNotDefinedException>();
+    }
 }

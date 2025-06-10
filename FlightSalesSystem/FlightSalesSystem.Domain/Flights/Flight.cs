@@ -47,6 +47,18 @@ public class Flight : AggregateRoot
         FlightPrices = newPrices;
     }
 
+    public Money GetPrice(DateTime date)
+    {
+        var price = FlightPrices
+            .Where(p => p.ValidityPeriod.IsApplicableOn(date))
+            .FirstOrDefault();
+
+        if (price == null)
+            throw new FlightPriceNotDefinedException(date);
+
+        return price.Price;
+    }
+
     public static Flight Create(
        FlightId flightId,
        Airport from,
