@@ -1,7 +1,7 @@
 ﻿using FlightSalesSystem.Domain.Abstractions;
 
-namespace FlightSalesSystem.Domain.Common;
-public sealed class Money : ValueObject
+namespace FlightSalesSystem.Domain.Flights.ValueObjects;
+public sealed class Airport : ValueObject
 {
     public override IEnumerable<object> GetAtomicValues()
     {
