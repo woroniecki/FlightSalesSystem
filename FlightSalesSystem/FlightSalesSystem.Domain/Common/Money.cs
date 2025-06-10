@@ -3,8 +3,9 @@
 namespace FlightSalesSystem.Domain.Common;
 public sealed class Money : ValueObject
 {
+    public decimal Amount { get; init; }
     public override IEnumerable<object> GetAtomicValues()
     {
-        throw new NotImplementedException();
+        yield return Amount;
     }
 }
