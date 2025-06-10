@@ -24,7 +24,7 @@ public static class FlightTestFactory
         if (priceFrom.HasValue && priceTo.HasValue)
         {
             var dateRange = DateRange.Create(priceFrom.Value, priceTo.Value);
-            prices.Add(FlightPrice.Create(new Money(), dateRange));
+            prices.Add(FlightPrice.Create(Money.CreateEUR(10), dateRange));
         }
 
         return Flight.Create(flightId, from, to, departureTime, daysOfWeekReadOnly, tenantId, prices);

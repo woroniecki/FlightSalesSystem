@@ -13,7 +13,7 @@ public class FlightTests
         var flight = FlightTestFactory.CreateFlight();
         var newFrom = new DateTime(2025, 01, 01);
         var newTo = newFrom.AddDays(5);
-        var newPrice = new Money();
+        var newPrice = Money.CreateEUR(10);
 
         // Act
         flight.AddPriceForPeriod(newFrom, newTo, newPrice);
@@ -33,7 +33,7 @@ public class FlightTests
 
         var overlappingFrom = priceFrom.AddDays(3);
         var overlappingTo = priceFrom.AddDays(10);
-        var overlappingPrice = new Money();
+        var overlappingPrice = Money.CreateEUR(10);
 
         // Act
         Action act = () => flight.AddPriceForPeriod(overlappingFrom, overlappingTo, overlappingPrice);
