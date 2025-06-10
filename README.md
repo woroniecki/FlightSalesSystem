@@ -57,13 +57,13 @@
 ## Struktura domeny
 
 - **Loty:**  
-  - Klasa `Flight` – ID, trasa, godzina, dni tygodnia, ceny.
+  - Klasa `Flight`
 - **Tenanci:**  
-  - Klasa `Tenant` – grupa (A lub B).
-- **Zniżki:**  
-  - Interfejs `IDiscountCriteria` – łatwe dodawanie nowych zniżek.
-- **Zakupy:**  
-  - Klasa `Purchase` – logika zakupu i zapisywania zniżek.
+  - Klasa `Tenant`
+- **Kryteria zniżek:**  
+  - Interfejs `IDiscountCriteria`
+- **Zakup lotu:**  
+  - Klasa `Purchase`
 
 ---
 
