@@ -1,4 +1,5 @@
-﻿using FlightSalesSystem.Domain.Flights;
+﻿using FlightSalesSystem.Domain.Discounts.Criteria;
+using FlightSalesSystem.Domain.Flights;
 using FlightSalesSystem.Domain.Purchases.ValueObjects;
 using FlightSalesSystem.Domain.Tenants;
 
@@ -9,4 +10,5 @@ public class PurchaseContext
     public required CustomerData CustomerData { get; init; }
     public required DateTime FlightDate { get; init; }
     public required Tenant Tenant { get; init; }
+    public required IEnumerable<IDiscountCriteria> AvailableDiscounts { get; init; }
 }
