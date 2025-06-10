@@ -7,8 +7,7 @@
 - **Opis:** Możliwość ręcznego dodania nowego lotu.
 - **Realizacja:**  
   - **Klasa:** `Flight`  
-  - **Metoda:** `Flight.Create(...)`  
-  - **Plik:** `FlightSalesSystem.Domain/Flights/Flight.cs`
+  - **Metoda:** `Flight.Create(...)` 
 
 ---
 
@@ -17,8 +16,7 @@
 - **Opis:** Możliwość wyszukania lotu po jego identyfikatorze (FlightId), do zaimplementowania przez warstwę infrastruktury.
 - **Realizacja:**  
   - **Interfejs:** `IFlightRepository`  
-  - **Metoda:** `GetFlightByFlightIdAsync(FlightId flightId)`  
-  - **Plik:** `FlightSalesSystem.Domain/Flights/IFlightRepository.cs`
+  - **Metoda:** `GetFlightByFlightIdAsync(FlightId flightId)` 
 
 ---
 
@@ -27,8 +25,7 @@
 - **Opis:** Możliwość zakupu lotu wyszukanego po ID.
 - **Realizacja:**  
   - **Klasa:** `PurchaseService`  
-  - **Metoda:** `PurchaseFlight(PurchaseContext context)`  
-  - **Plik:** `FlightSalesSystem.Domain/Purchases/Services/PurchaseService.cs`
+  - **Metoda:** `PurchaseFlight(PurchaseContext context)` 
 
 ---
 
@@ -39,8 +36,7 @@
   - **Implementacje:**  
     - `BirthdayDiscount` (urodziny kupującego)  
     - `ThursdayAfricaDiscount` (lot do Afryki w czwartek)  
-  - **Klasa:** `DiscountsApplier` – stosuje zniżki  
-  - **Plik:** `FlightSalesSystem.Domain/Discounts/Services/DiscountsApplier.cs`
+  - **Klasa:** `DiscountsApplier` – stosuje zniżki 
 
 ---
 
@@ -48,9 +44,7 @@
 
 - **Realizacja:**  
   - **Klasa:** `TenantGroup` (A lub B)  
-  - **Klasa:** `DiscountSavingPolicy` – decyduje, czy zapisać zniżki  
-  - **Plik:** `FlightSalesSystem.Domain/Discounts/Services/DiscountSavingPolicy.cs`  
-  - **Obiekt:** `Purchase` – pole `AppliedDiscounts` zawiera listę zniżek (lub jest puste dla grupy B)
+  - **Klasa:** `DiscountSavingPolicy` – decyduje, czy zapisać zniżki 
 
 ---
 
